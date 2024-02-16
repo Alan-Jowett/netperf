@@ -89,3 +89,4 @@ jobs:
       with:
         name: logs_${{ matrix.vec.env }}_${{ matrix.vec.os }}_${{ matrix.vec.arch }}
         path: artifacts/logs
+
