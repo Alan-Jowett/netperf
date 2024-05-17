@@ -115,7 +115,7 @@ jobs:
         if ("${{inputs.profile}}" -eq "true") { $profile = 1 }
         $duration = 60000
         if ("${{inputs.duration}}" -ne "") { $duration = ${{inputs.duration}} }
-        $url = "https://raw.githubusercontent.com/microsoft/bpf_performance/main/scripts/two-machine-perf.ps1"
+        $url = "https://raw.githubusercontent.com/Alan-Jowett/bpf_performance/set_rss/scripts/two-machine-perf.ps1"
         iex "& { $(irm $url) } -CpuProfile $profile -Duration $duration"
 
     - name: Stop TCPIP tracing
