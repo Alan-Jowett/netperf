@@ -89,6 +89,15 @@ jobs:
         name: "cts-traffic Release"
         path: ${{ github.workspace }}\cts-traffic
 
+    - name: Save RSS Config to file and update
+      if: always()
+      run: |
+        $rssConfig = Get-NetAdapterRss -Name "Ethernet 7" 
+        $rssConfig | ConvertTo-Json | Out-File -FilePath ${{ github.workspace }}\cts-traffic\netadapterrss.json
+        $rssConfig.MaxProcessors = 40
+        $rssConfig.NumberOfReceiveQueues = 40
+        $rssConfig | Set-NetAdapterRss -Name "Ethernet 7"
+
     - name: Capture pktmon counters - start
       run: |
         pktmon stop
@@ -107,8 +116,9 @@ jobs:
       working-directory: ${{ github.workspace }}\cts-traffic
       run: |
         $profile = 0
-        $duration = ${{inputs.duration}}
         if ("${{inputs.profile}}" -eq "true") { $profile = 1 }
+        $duration = 60000
+        if ("${{inputs.duration}}" -ne "") { $duration = ${{inputs.duration}} }
         $url = "https://raw.githubusercontent.com/microsoft/bpf_performance/main/scripts/two-machine-perf.ps1"
         iex "& { $(irm $url) } -CpuProfile $profile -Duration $duration"
 
@@ -126,9 +136,13 @@ jobs:
       run: |
         get-counter "\Network Adapter(*)\packets received discarded"
 
-    - name: Query RSS settings
+    - name: Restore RSS Config
+      if: always()
       run: |
-        Get-NetAdapterRss
+        $rssConfig = (Get-Content -FilePath ${{ github.workspace }}\cts-traffic\netadapterrss.json | ConvertFrom-Json)
+        $rssConfig.MaxProcessors = 8
+        $rssConfig.NumberOfReceiveQueues = 8
+        $rssConfig | Set-NetAdapterRss -Name "Ethernet 7"
 
     - name: Move ETL files to ETLfolder 
       working-directory: ${{ github.workspace }}\cts-traffic

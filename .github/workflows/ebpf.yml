@@ -224,8 +224,9 @@ jobs:
       run: |
         dir .
         $profile = 0
-        $duration = ${{inputs.duration}}
         if ("${{inputs.profile}}" -eq "true") { $profile = 1 }
+        $duration = 60000
+        if ("${{inputs.duration}}" -ne "") { $duration = ${{inputs.duration}} }
         $url = "https://raw.githubusercontent.com/microsoft/bpf_performance/main/scripts/two-machine-perf.ps1"
         iex "& { $(irm $url) } -CpuProfile $profile -Duration $duration"
         if ($Profile) { Move-Item -Path ${{ github.workspace }}\cts-traffic\cts_traffic_send.etl -NewName "${{ github.workspace }}\etl\cts_traffic_send_baseline.etl"}
@@ -296,8 +297,9 @@ jobs:
       run: |
         dir .
         $profile = 0
-        $duration = ${{inputs.duration}}
         if ("${{inputs.profile}}" -eq "true") { $profile = 1 }
+        $duration = 60000
+        if ("${{inputs.duration}}" -ne "") { $duration = ${{inputs.duration}} }
         $url = "https://raw.githubusercontent.com/microsoft/bpf_performance/main/scripts/two-machine-perf.ps1"
         if (Test-Path "tcpip.wprp") { Remove-Item -Force "tcpip.wprp" }
         Invoke-WebRequest -uri "https://raw.githubusercontent.com/microsoft/netperf/main/.github/workflows/tcpip.wprp" -OutFile "tcpip.wprp"
