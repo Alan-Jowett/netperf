@@ -74,6 +74,7 @@ jobs:
         if (Test-Path ${{ github.workspace }}\ETL) { Remove-Item -Recurse -Force ${{ github.workspace }}\ETL }
         New-item -ItemType Directory -Path ${{ github.workspace }}\cts-traffic
         New-item -ItemType Directory -Path ${{ github.workspace }}\ETL
+        wpr.exe -cancel 2>$null; $global:LASTEXITCODE = 0
 
     # Install the latest anti-malware signatures for Windows Defender to prevent false positives.
     # Windows Defender incorrectly flags some of the test binaries as malware.
