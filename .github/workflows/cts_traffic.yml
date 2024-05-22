@@ -24,6 +24,11 @@ on:
         required: false
         default: 60000
         type: number
+      concurrent_connections:
+        description: 'Number of concurrent connections'
+        required: false
+        default: 32
+        type: number      
 
   pull_request:
     branches:
@@ -115,8 +120,10 @@ jobs:
         if ("${{inputs.profile}}" -eq "true") { $profile = 1 }
         $duration = 60000
         if ("${{inputs.duration}}" -ne "") { $duration = ${{inputs.duration}} }
+        $concurrentConnections = 32
+        if ("${{inputs.concurrent_connections}}" -ne "") { $concurrentConnections = ${{inputs.concurrent_connections}} }
         $url = "https://raw.githubusercontent.com/Alan-Jowett/bpf_performance/set_rss/scripts/two-machine-perf.ps1"
-        iex "& { $(irm $url) } -CpuProfile $profile -Duration $duration"
+        iex "& { $(irm $url) } -CpuProfile $profile -Duration $duration -ConcurrentConnections $concurrentConnections -Verbose"
 
     - name: Stop TCPIP tracing
       if: inputs.tcp_ip_tracing == true
